@@ -1,0 +1,25 @@
+{
+  "name": "LocalStorage",
+  "version": "0.1.0",
+  "authors": [
+    "Gian Marco Toso <gianmarco.toso@gmail.com>"
+  ],
+  "description": "A LocalStorage wrapper with some extra functions",
+  "main": "src/LocalStorage.js",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "localStorage"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "LocalStorage",
+  "version": "0.1.0",
+  "description": "A LocalStorage wrapper with some extra functions",
+  "main": "src/LocalStorage.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "localStorage"
+  ],
+  "author": "Gian Marco Toso",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-uglify": "^0.8.0",
+    "mocha": "^2.2.5",
+    "requirejs": "^2.1.18"
+  }
+}

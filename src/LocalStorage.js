@@ -1,0 +1,200 @@
+(function(root, factory) {
+	if (typeof define === 'function' && define.amd) {
+		define([], function() {
+			var LocalStorage = factory();
+			
+			// In case the global is still needed
+			root.LocalStorage = LocalStorage;
+
+			return LocalStorage;
+		});
+	} else {
+		root.LocalStorage = factory();
+	}
+})(this, function() {
+	var allowedConstructors = [
+		Object,
+		Number,
+		String,
+		Array,
+		Date,
+		Boolean
+	];
+
+	var LocalStorageException = function(message, value) {
+		this.name = 'LocalStorageException';
+		this.message = message;
+		this.value = value;
+	}
+
+	if (!this.localStorage) {
+		throw new LocalStorageException("Local storage is not supported by your configuration. Sorry :(");
+	}
+
+	var LocalStorage = function(name, options) {
+		if (!name) {
+			throw new LocalStorageException('A LocalStorage instance must have a name');
+		}
+
+		options = (options && options.constructor === Object) ? options : {};
+
+		var _name = name;
+		var _validators = {};
+
+		var defaultOptions = {
+			blockingValidation: false
+		};
+
+		var _options = defaultOptions;
+
+		Object.keys(defaultOptions).forEach(function(key) {
+			if (options.hasOwnProperty(key)) {
+				_options[key] = options[key];
+			}
+		});
+
+		Object.defineProperty(this, 'options', {
+			enumerable: true,
+			get: function() {
+				return _options;
+			},
+			set: function(value) {
+				if (value.constructor !== Object) {
+					throw new LocalStorageException("Cannot set the options property to anything other than an object.");
+				}
+
+				_options = value;
+			}
+		});
+
+		Object.defineProperty(this, 'name', {
+			enumerable: true,
+			get: function() {
+				return _name;
+			}
+		});
+
+		Object.defineProperty(this, 'validators', {
+			enumerable: true,
+			get: function() {
+				return _validators;
+			},
+			set: function(value) {
+				if (value.constructor !== Object) {
+					throw new LocalStorageException("Cannot set the validators property to anything other than an object. You shouldn't write this property directly anyways!");
+				}
+
+				_validators = value;
+			}
+		})
+	}
+
+	// Static methods
+	LocalStorage.get = function(key) {
+		var value = localStorage.getItem(key);
+		if (value) {
+			value = JSON.parse(value);
+		}
+
+		return value;
+	}
+
+	LocalStorage.set = function(key, value) {
+		if (!value) {
+			throw new LocalStorageException("No value has been passed");
+		}
+
+		if (allowedConstructors.indexOf(value.constructor) === -1) {
+			throw new LocalStorageException("Cannot serialize value", value);
+		}
+
+		localStorage.setItem(key, JSON.stringify(value));
+	}
+
+	LocalStorage.remove = function(key) {
+		localStorage.removeItem(key);
+	}
+
+	LocalStorage.clear = function() {
+		Object.keys(localStorage).forEach(function(key) {
+			LocalStorage.remove(key);
+		});
+	}
+
+	// Instance methods
+	LocalStorage.prototype.get = function(key) {
+		return LocalStorage.get(this.name + ':' + key);
+	}
+
+	LocalStorage.prototype.set = function(key, value, validator) {
+		if ((validator && validator.constructor === Function && !validator(value)) || 
+			(!validator && this.validators[key] && !this.validators[key](value))) {
+			if (this.options.blockingValidation === true) {
+				throw new LocalStorageException('Validation failed for key "' + key + '"', value);	
+			}
+
+			return false;
+		}
+
+		LocalStorage.set(this.name + ':' + key, value);
+
+		return this;
+	}
+
+	LocalStorage.prototype.remove = function(key) {
+		LocalStorage.remove(this.name + ':' + key);
+
+		return this;
+	}
+
+	LocalStorage.prototype.all = function() {
+		var collection = {};
+		var regexp = new RegExp("^" + this.name + ":.+$");
+
+		Object.keys(localStorage).forEach(function(k) {
+			if (regexp.test(k)) {
+				collection[k.substr(this.name.length + 1)] = LocalStorage.get(k);
+			}
+		}.bind(this));
+
+		return collection;
+	}
+
+	LocalStorage.prototype.clear = function() {
+		var regexp = new RegExp("^" + this.name + ":.+$");
+
+		Object.keys(localStorage).forEach(function(k) {
+			if (regexp.test(k)) {
+				LocalStorage.remove(k);
+			}
+		}.bind(this));
+
+		return this;
+	}
+
+	LocalStorage.prototype.setValidator = function(key, validator) {
+		if (validator.constructor !== Function) {
+			throw new LocalStorageException('A validator must be a function!');
+		}
+
+		this.validators[key] = validator;
+
+		return this;
+	}
+
+	LocalStorage.prototype.clearValidator = function(key) {
+		if (this.validators[key]) {
+			delete this.validators[key];
+		}
+
+		return this;
+	}
+
+	LocalStorage.prototype.clearValidators = function() {
+		this.validators = {};
+
+		return this;
+	}
+
+	return LocalStorage;
+});
