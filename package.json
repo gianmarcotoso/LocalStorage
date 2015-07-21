@@ -1,5 +1,5 @@
 {
-  "name": "LocalStorage",
+  "name": "localstoragejs",
   "version": "0.1.0",
   "description": "A LocalStorage wrapper with some extra functions",
   "main": "src/LocalStorage.js",
