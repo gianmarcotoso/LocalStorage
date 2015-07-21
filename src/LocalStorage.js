@@ -8,6 +8,8 @@
 
 			return LocalStorage;
 		});
+	} else if (typeof exports !== 'undefined') {
+		module.exports = factory();
 	} else {
 		root.LocalStorage = factory();
 	}
@@ -40,9 +42,11 @@
 
 		var _name = name;
 		var _validators = {};
+		var _promise;
 
 		var defaultOptions = {
-			blockingValidation: false
+			blockingValidation: false,
+			usePromises: false
 		};
 
 		var _options = defaultOptions;
@@ -86,7 +90,29 @@
 
 				_validators = value;
 			}
-		})
+		});
+
+		Object.defineProperty(this, 'Promise', {
+			enumerable: true,
+			get: function() {
+				if (!_promise && window.Promise) {
+					_promise = window.Promise;
+				}
+
+				if (!_promise) {
+					throw new LocalStorageException("Promises are not supported by your configuration, but you might try with a library or a polyfill!");
+				}
+
+				return _promise;
+			},
+			set: function(PromiseImplementation) {
+				if (PromiseImplementation.constructor !== Function) {
+					throw new LocalStorageException("Promise implementation must be a constructor.");
+				}
+
+				_promise = PromiseImplementation;
+			}
+		});
 	}
 
 	// Static methods
@@ -127,8 +153,30 @@
 	}
 
 	LocalStorage.prototype.set = function(key, value, validator) {
-		if ((validator && validator.constructor === Function && !validator(value)) || 
-			(!validator && this.validators[key] && !this.validators[key](value))) {
+		var validatorCondition = (
+			(validator && validator.constructor === Function && !validator(value)) || 
+			(!validator && this.validators[key] && !this.validators[key](value))
+		);
+
+		if (this.options.usePromises === true) {
+			var promise = new this.Promise(function(resolve, reject) {
+				if (validatorCondition) {
+					if (this.options.blockingValidation === true) {
+						return reject(new LocalStorageException('Validation failed for key "' + key + '"', value));
+					}
+
+					return reject(false);
+				}
+
+				LocalStorage.set(this.name + ':' + key, value);
+
+				return resolve(this);
+			}.bind(this));
+
+			return promise;
+		}
+
+		if (validatorCondition) {
 			if (this.options.blockingValidation === true) {
 				throw new LocalStorageException('Validation failed for key "' + key + '"', value);	
 			}
