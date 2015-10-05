@@ -1,6 +1,6 @@
 {
   "name": "localstoragejs",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A LocalStorage wrapper with some extra functions",
   "main": "src/LocalStorage.js",
   "scripts": {

@@ -14,6 +14,8 @@
 		root.LocalStorage = factory();
 	}
 })(this, function() {
+	var constructorCheck = false;
+
 	var allowedConstructors = [
 		Object,
 		Number,
@@ -130,7 +132,7 @@
 			throw new LocalStorageException("No value has been passed");
 		}
 
-		if (allowedConstructors.indexOf(value.constructor) === -1) {
+		if (constructorCheck === true && allowedConstructors.indexOf(value.constructor) === -1) {
 			throw new LocalStorageException("Cannot serialize value", value);
 		}
 
@@ -149,6 +151,10 @@
 
 	LocalStorage.allowConstructor = function(constructor) {
 		allowedConstructors.push(constructor);
+	}
+
+	LocalStorage.toggleConstructorCheck = function(value) {
+		constructorCheck = value;
 	}
 
 	// Instance methods

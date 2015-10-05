@@ -14,6 +14,7 @@ LocalStorage.set('myValue', 15); // Saves the value 15 as `myValue`.
 LocalStorage.get('myValue'); // Retrieves whatever is saved in `myValue`.
 LocalStorage.remove('myValue'); // Clears the `myValue` key
 LocalStorage.clear(); // Removes everything from local storage.
+LocalStorage.toggleConstructorCheck(value) // Enables or disables the check on the value constructor (disallows the serialization of exotic objects)
 LocalStorage.allowConstructor(constructor); // Allows the serialization of the specified constructor.
 ````
 
