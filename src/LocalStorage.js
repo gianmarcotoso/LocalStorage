@@ -147,6 +147,10 @@
 		});
 	}
 
+	LocalStorage.allowConstructor = function(constructor) {
+		allowedConstructors.push(constructor);
+	}
+
 	// Instance methods
 	LocalStorage.prototype.get = function(key) {
 		return LocalStorage.get(this.name + ':' + key);

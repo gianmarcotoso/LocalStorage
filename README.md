@@ -14,6 +14,7 @@ LocalStorage.set('myValue', 15); // Saves the value 15 as `myValue`.
 LocalStorage.get('myValue'); // Retrieves whatever is saved in `myValue`.
 LocalStorage.remove('myValue'); // Clears the `myValue` key
 LocalStorage.clear(); // Removes everything from local storage.
+LocalStorage.allowConstructor(constructor); // Allows the serialization of the specified constructor.
 ````
 
 If you want more flexibility, you can create an instance of the LocalStorage object. This will namespace all the keys to the name of the instance, and will also allow you to use validators.
