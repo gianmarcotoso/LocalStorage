@@ -122,4 +122,4 @@ Even though all this stuff is synchronous, I'm toying with the idea of using pro
 If you find bugs or things you don't like, please send a PR. Remember to build the minified version of library using `grunt` and update the README if required.
 
 ##License
-MIT ;)
+MIT
