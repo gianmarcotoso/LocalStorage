@@ -40,7 +40,7 @@
 			clear       : function() { return this._data = {}; }
 		};
 
-		console.warning('LocalStorage is not supported by your browser. Avoiding hard crash by shimming (quick and dirty), thanks to https://gist.github.com/juliocesar/926500');
+		console.error('LocalStorage is not supported by your browser. Avoiding hard crash by shimming (quick and dirty), thanks to https://gist.github.com/juliocesar/926500');
 	}
 
 	var LocalStorage = function(name, options) {
