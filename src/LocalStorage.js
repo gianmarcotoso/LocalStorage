@@ -32,7 +32,7 @@
 	}
 
 	if (!this.localStorage) {
-		this.localStorage = {
+		window.localStorage = {
 			_data       : {},
 			setItem     : function(id, val) { return this._data[id] = String(val); },
 			getItem     : function(id) { return this._data.hasOwnProperty(id) ? this._data[id] : undefined; },
