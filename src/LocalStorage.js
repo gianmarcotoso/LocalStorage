@@ -32,7 +32,15 @@
 	}
 
 	if (!this.localStorage) {
-		throw new LocalStorageException("Local storage is not supported by your configuration. Sorry :(");
+		this.localStorage = {
+			_data       : {},
+			setItem     : function(id, val) { return this._data[id] = String(val); },
+			getItem     : function(id) { return this._data.hasOwnProperty(id) ? this._data[id] : undefined; },
+			removeItem  : function(id) { return delete this._data[id]; },
+			clear       : function() { return this._data = {}; }
+		};
+
+		console.warning('LocalStorage is not supported by your browser. Avoiding hard crash by shimming (quick and dirty), thanks to https://gist.github.com/juliocesar/926500');
 	}
 
 	var LocalStorage = function(name, options) {
